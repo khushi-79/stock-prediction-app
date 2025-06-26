@@ -1,70 +1,101 @@
-# Getting Started with Create React App
+### 📁 `frontend/README.md`
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+````markdown
+# 📊 Stock Prediction App - Frontend
 
-## Available Scripts
+This is the **React-based frontend** for the Stock Price Prediction App.  
+It allows users to select a stock (ticker symbol), enter the number of days to forecast, and view the results as a chart and list.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Dropdown for popular stock ticker symbols (e.g., AAPL, MSFT, TSLA, etc.)
+- Input for number of days to predict (default: 5)
+- Beautiful prediction chart using **Recharts**
+- Displays prediction dates and prices
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 📦 Setup & Run
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Make sure you are in the `frontend/` folder:
 
-### `npm run build`
+   ```bash
+   cd frontend
+````
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Install dependencies:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   npm install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Start the frontend development server:
 
-### `npm run eject`
+   ```bash
+   npm start
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   This will run the app at `http://localhost:3000`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+> ⚠️ Make sure your backend FastAPI server is running at `http://localhost:8000`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🔗 API Used
 
-## Learn More
+This app calls the backend API endpoint:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```http
+POST http://localhost:8000/api/predict
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Payload:
 
-### Code Splitting
+```json
+{
+  "ticker": "AAPL",
+  "days": 5
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Response:
 
-### Analyzing the Bundle Size
+```json
+{
+  "ticker": "AAPL",
+  "predicted_days": 5,
+  "predictions": [
+    {
+      "ds": "2025-06-26T00:00:00",
+      "yhat": 199.27
+    },
+    ...
+  ]
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🎨 Stack Used
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* React
+* Axios
+* Recharts
+* CSS
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 📁 Folder Structure
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+frontend/
+├── public/
+├── src/
+│   ├── components/
+│   │   └── PredictionForm.jsx
+│   ├── App.js
+│   ├── index.js
+│   └── ...
+└── package.json
