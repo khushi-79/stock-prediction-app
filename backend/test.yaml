@@ -1,0 +1,11 @@
+
+---
+
+## 🧪 Testing
+
+After running `uvicorn`, test it in Postman or cURL:
+
+```bash
+curl -X POST http://localhost:8000/api/predict \
+     -H "Content-Type: application/json" \
+     -d '{"ticker": "AAPL", "days": 5}'
