@@ -1,12 +1,8 @@
-import React from "react";
-import PredictionForm from "./components/PredictionForm";
+import './App.css';
+import PredictionForm from './components/PredictionForm';
 
 function App() {
-  return (
-    <div className="App">
-      <PredictionForm />
-    </div>
-  );
+  return <PredictionForm />;
 }
 
 export default App;
