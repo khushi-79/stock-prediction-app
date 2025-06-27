@@ -1,113 +1,217 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import styled from "styled-components";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis,
+  CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import "./PredictionForm.css";
+
+const Container = styled.div`
+  max-width: 800px;
+  margin: auto;
+  padding: 2rem;
+  background-color: #f4f4f8;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+`;
+
+const Heading = styled.h2`
+  text-align: center;
+  color: #333;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+`;
+
+const Button = styled.button`
+  margin-top: 2rem;
+  background-color: #0066ff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+`;
+
+const ErrorText = styled.p`
+  color: red;
+`;
+
+const PriceCard = styled.div`
+  background: #fff;
+  padding: 1rem;
+  margin-top: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+`;
+
+const PredictionList = styled.ul`
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1rem;
+`;
+
+const PredictionItem = styled.li`
+  margin-bottom: 5px;
+`;
 
 function PredictionForm() {
-  const [ticker, setTicker] = useState("AAPL");
+  const [ticker, setTicker] = useState("");
+  const [symbols, setSymbols] = useState([]);
   const [days, setDays] = useState(5);
   const [result, setResult] = useState(null);
+  const [price, setPrice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Fetch ticker list on mount
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/symbols")
+      .then((res) => {
+        setSymbols(res.data.slice(0, 20)); // limit to first 20 for dropdown
+      })
+      .catch((err) => {
+        console.error("Error fetching symbols:", err);
+      });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     setResult(null);
+    setPrice(null);
+
     try {
-      const response = await axios.post("http://localhost:8000/api/predict", {
+      const prediction = await axios.post("http://localhost:8000/api/predict", {
         ticker,
         days,
       });
-      setResult(response.data);
+
+      if (prediction.data?.predictions) {
+        setResult(prediction.data);
+      } else {
+        setError("No prediction data returned.");
+      }
+
+      const priceRes = await axios.get(`http://localhost:8000/api/price/${ticker}`);
+      setPrice(priceRes.data);
     } catch (err) {
+      console.error(err);
       setError("Prediction failed. Try again.");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <h2>📈 Stock Price Prediction</h2>
-        <form onSubmit={handleSubmit}>
-          <label>Ticker Symbol:</label>
-          <select
-            value={ticker}
-            onChange={(e) => setTicker(e.target.value)}
-            required
-          >
-            <option value="">-- Select Company --</option>
-            <option value="AAPL">Apple (AAPL)</option>
-            <option value="MSFT">Microsoft (MSFT)</option>
-            <option value="GOOGL">Google (GOOGL)</option>
-            <option value="AMZN">Amazon (AMZN)</option>
-            <option value="TSLA">Tesla (TSLA)</option>
-            <option value="META">Meta (META)</option>
-            <option value="NFLX">Netflix (NFLX)</option>
-            <option value="NVDA">NVIDIA (NVDA)</option>
-            <option value="TCS.NS">TCS (TCS.NS)</option>
-            <option value="RELIANCE.NS">Reliance (RELIANCE.NS)</option>
-          </select>
+    <Container>
+      <Heading>📈 Stock Price Prediction</Heading>
+      <form onSubmit={handleSubmit}>
+        <Label>Choose Company:</Label>
+        <Select value={ticker} onChange={(e) => setTicker(e.target.value)} required>
+          <option value="">-- Select Ticker --</option>
+          {symbols.map((item, index) => (
+            <option key={index} value={item.symbol}>
+              {item.name} ({item.symbol})
+            </option>
+          ))}
+        </Select>
 
-          <label>Number of Days:</label>
-          <input
-            type="number"
-            value={days}
-            onChange={(e) => setDays(e.target.value)}
-            min="1"
-            required
-          />
+        <Label>Days of Prediction:</Label>
+        <Input
+          type="number"
+          min="1"
+          max="30"
+          value={days}
+          onChange={(e) => setDays(e.target.value)}
+        />
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Predicting..." : "Predict"}
-          </button>
-        </form>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Predicting..." : "Predict"}
+        </Button>
+      </form>
 
-        {error && <p className="error">{error}</p>}
+      {error && <ErrorText>{error}</ErrorText>}
 
-        {result && (
-          <div className="result">
-            <h3>Predictions for {result.ticker}</h3>
-            <ul>
-              {result.predictions.map((entry, index) => (
-                <li key={index}>
-                  {new Date(entry.ds).toLocaleDateString()}:{" "}
-                  <strong>{entry.yhat.toFixed(2)}</strong>
-                </li>
+      {price && price["Global Quote"] && (
+        <PriceCard>
+          <h3>💹 {price["Global Quote"]["01. symbol"]}</h3>
+          <p>Open: {price["Global Quote"]["02. open"]}</p>
+          <p>High: {price["Global Quote"]["03. high"]}</p>
+          <p>Low: {price["Global Quote"]["04. low"]}</p>
+          <p>Price: <strong>{price["Global Quote"]["05. price"]}</strong></p>
+          <p>Change: {price["Global Quote"]["09. change"]} ({price["Global Quote"]["10. change percent"]})</p>
+          <p>Latest Day: {price["Global Quote"]["07. latest trading day"]}</p>
+        </PriceCard>
+      )}
+
+      {result?.predictions && (
+        <>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={result.predictions}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="ds" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="yhat" stroke="#007bff" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
+
+        <PriceCard>
+            <h4>📝 Summary:</h4>
+            <p>
+              <strong>{ticker}</strong> is predicted to reach approximately <strong>₹
+              {Number(result.predictions[result.predictions.length - 1].yhat).toFixed(2)}</strong> in{" "}
+              <strong>{days}</strong> days.
+            </p>
+          </PriceCard>
+
+          <PriceCard>
+            <h4>🔢 Prediction Details:</h4>
+            <PredictionList>
+              {result.predictions.map((item, index) => (
+                <PredictionItem key={index}>
+                  <strong>{item.ds}:</strong> ₹{Number(item.yhat).toFixed(2)}
+                </PredictionItem>
               ))}
-            </ul>
+            </PredictionList>
+          </PriceCard>
 
-            <div className="chart-container">
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={result.predictions}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="ds" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="yhat"
-                    stroke="#4a90e2"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+          <iframe
+            src={`https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=${ticker}&locale=en`}
+            style={{ width: "100%", height: "300px", border: "none", marginTop: "60px" }}
+            allowTransparency
+            scrolling="no"
+          ></iframe>
+          </>
+      )}
+    </Container>
   );
 }
 
