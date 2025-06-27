@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import prediction
+from app.routes import symbols  # Import your new route module
 
 app = FastAPI(title="Stock Price Prediction API")
 
 # Register prediction routes
 app.include_router(prediction.router, prefix="/api")
+app.include_router(symbols.router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
