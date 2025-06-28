@@ -93,7 +93,7 @@ function PredictionForm() {
   useEffect(() => {
     axios.get("http://localhost:8000/api/symbols")
       .then((res) => {
-        setSymbols(res.data.slice(0, 20)); // limit to first 20 for dropdown
+        setSymbols(res.data.slice(0, 15000)); // limit to first 20 for dropdown
       })
       .catch((err) => {
         console.error("Error fetching symbols:", err);

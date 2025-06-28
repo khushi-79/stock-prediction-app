@@ -3,11 +3,11 @@ import requests
 
 router = APIRouter()
 
-API_KEY = "8LYVXY9ONGITUCL4"  # Replace with your actual API key
+API_KEY = "d1fr5uhr01qig3h3nbbgd1fr5uhr01qig3h3nbc0"
 
 @router.get("/price/{symbol}")
 def get_stock_price(symbol: str):
-    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={API_KEY}"
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={API_KEY}"
     
     try:
         response = requests.get(url)
