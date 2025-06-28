@@ -13,10 +13,15 @@ app.include_router(price_router.router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",                      # for local dev
+        "https://stock-prediction-app-pi.vercel.app" # deployed frontend
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 def read_root():
