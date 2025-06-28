@@ -1,5 +1,8 @@
-yfinance
-pandas
-prophet
 fastapi
 uvicorn
+prophet
+pandas
+scikit-learn
+yfinance
+joblib
+python-multipart
