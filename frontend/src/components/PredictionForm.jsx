@@ -90,7 +90,7 @@ function PredictionForm() {
 
   // Fetch ticker list on mount
   useEffect(() => {
-    axios.get("stock-prediction-app-production.up.railway.app/api/symbols")
+    axios.get("https://stock-prediction-app-production.up.railway.app/api/symbols")
       .then((res) => {
         setSymbols(res.data.slice(0, 15000)); // limit to first 20 for dropdown
       })
@@ -107,7 +107,7 @@ function PredictionForm() {
     setPrice(null);
 
     try {
-      const prediction = await axios.post("stock-prediction-app-production.up.railway.app/api/predict", {
+      const prediction = await axios.post("https://stock-prediction-app-production.up.railway.app/api/predict", {
         ticker,
         days,
       });
@@ -118,7 +118,7 @@ function PredictionForm() {
         setError("No prediction data returned.");
       }
 
-      const priceRes = await axios.get(`stock-prediction-app-production.up.railway.app/api/price/${ticker}`);
+      const priceRes = await axios.get(`https://stock-prediction-app-production.up.railway.app/api/price/${ticker}`);
       setPrice(priceRes.data);
     } catch (err) {
       console.error(err);
