@@ -16,7 +16,7 @@ def get_symbols():
         data = response.json()
 
         # Return top 300 most popular (just sample filtering)
-        data = sorted(data, key=lambda x: x.get("symbol", ""))[:300]
+        data = sorted(data, key=lambda x: x.get("symbol", ""))[:1000]
 
         # You can further filter by type or active status
         formatted = [{"symbol": s["symbol"], "name": s.get("description", ""), "exchange": s.get("exchange", "")} for s in data]

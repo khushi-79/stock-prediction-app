@@ -33,8 +33,7 @@ const Input = styled.input`
   border-radius: 6px;
   border: 1px solid #ccc;
 `;
-
-const Select = styled.select`
+const SearchInput = styled.input`
   width: 100%;
   padding: 8px;
   margin-top: 5px;
@@ -134,14 +133,27 @@ function PredictionForm() {
       <Heading>📈 Stock Price Prediction</Heading>
       <form onSubmit={handleSubmit}>
         <Label>Choose Company:</Label>
-        <Select value={ticker} onChange={(e) => setTicker(e.target.value)} required>
-          <option value="">-- Select Ticker --</option>
-          {symbols.map((item, index) => (
-            <option key={index} value={item.symbol}>
-              {item.name} ({item.symbol})
-            </option>
-          ))}
-        </Select>
+       <SearchInput
+  type="text"
+  placeholder="Search Ticker or Company Name..."
+  value={ticker}
+  onChange={(e) => setTicker(e.target.value)}
+  list="ticker-options"
+  required
+/>
+
+<datalist id="ticker-options">
+  {symbols
+    .filter(item =>
+      `${item.name} ${item.symbol}`.toLowerCase().includes(ticker.toLowerCase())
+    )
+    .slice(0, 15)
+    .map((item, index) => (
+      <option key={index} value={item.symbol}>
+        {item.name} ({item.symbol})
+      </option>
+  ))}
+</datalist>
 
         <Label>Days of Prediction:</Label>
         <Input
