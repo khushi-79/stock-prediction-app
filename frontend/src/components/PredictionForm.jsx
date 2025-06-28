@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import Select from "react-select";
 import {
   LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer
@@ -99,6 +100,11 @@ function PredictionForm() {
       });
   }, []);
 
+  const options = symbols.map((item) => ({
+  value: item.symbol,
+  label: `${item.name} (${item.symbol})`,
+}));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -133,13 +139,11 @@ function PredictionForm() {
       <Heading>📈 Stock Price Prediction</Heading>
       <form onSubmit={handleSubmit}>
         <Label>Choose Company:</Label>
-       <SearchInput
-  type="text"
+       <Select
+  options={options}
+  onChange={(selectedOption) => setTicker(selectedOption.value)}
   placeholder="Search Ticker or Company Name..."
-  value={ticker}
-  onChange={(e) => setTicker(e.target.value)}
-  list="ticker-options"
-  required
+  isSearchable
 />
 
 <datalist id="ticker-options">
